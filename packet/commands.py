@@ -178,6 +178,15 @@ def fetch_results():
 
     end_date = datetime.combine(end_date, packet_end_time)
 
+    percent_counts = {
+        0.5: 0,
+        0.55: 0,
+        0.6: 0,
+        0.65: 0,
+        0.7: 0,
+        0.75: 0
+    }
+
     for packet in Packet.query.filter_by(end=end_date).all():
         print()
 
@@ -185,6 +194,10 @@ def fetch_results():
 
         received = packet.signatures_received()
         required = packet.signatures_required()
+
+        for percent in percent_counts.keys():
+            if received.member_total / required.member_total >= percent:
+                percent_counts[percent] += 1
 
         print("\tUpperclassmen score: {:0.2f}%".format(received.member_total / required.member_total * 100))
         print("\tTotal score: {:0.2f}%".format(received.total / required.total * 100))
@@ -197,3 +210,6 @@ def fetch_results():
         print()
 
         print("\tTotal missed:", required.total - received.total)
+
+    print()
+    print("Percent counts:", percent_counts)
