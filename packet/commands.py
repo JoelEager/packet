@@ -9,7 +9,7 @@ import click
 
 from . import app, db
 from .models import Freshman, Packet, FreshSignature, UpperSignature, MiscSignature
-from .ldap import ldap_get_eboard, ldap_get_live_onfloor
+from .ldap import ldap_get_eboard, ldap_get_live_onfloor, ldap_is_intromember, ldap_get_member
 
 
 @app.cli.command("create-secret")
@@ -205,3 +205,17 @@ def fetch_results():
         print()
 
         print("\tTotal missed:", required.total - received.total)
+
+
+@app.cli.command("delete-intro-sigs")
+def delete_intro_sigs():
+    """
+    Temp command for delete invalid sigs from the freshmen with new accounts
+    """
+    for member in {sig.member for sig in MiscSignature.query.all()}:
+        if ldap_is_intromember(ldap_get_member(member)):
+            MiscSignature.query.filter_by(member=member).delete()
+            print("Deleting all sigs from " + member)
+
+    db.session.commit()
+    print("Done!")
