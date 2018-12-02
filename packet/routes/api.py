@@ -52,35 +52,6 @@ def get_freshmen(search_term):
         return rest_error("bad_search_term", "Only letters are allowed in the search text")
 
 
-def update_sig(packet, uid):
-    """
-    Helper method for the sign() endpoint
-        Handles finding and updating the correct database row with the new signature
-    """
-    if app.config["REALM"] == "csh":
-        # Check if the CSHer is an upperclassman and if so, sign that row
-        for sig in filter(lambda sig: sig.member == uid, packet.upper_signatures):
-            if not sig.signed:
-                sig.signed = True
-                app.logger.info("Member {} signed packet {} as an upperclassman".format(uid, packet.id))
-                return jsonify({"message": "Added upperclassman signature"})
-            else:
-                app.logger.warn("Member {} tried to repeat signing packet {} as an upperclassman".format(uid, packet.id))
-
-        # The CSHer is a misc so add a new row
-        db.session.add(MiscSignature(packet=packet, member=uid))
-        app.logger.info("Member {} signed packet {} as a misc".format(uid, packet.id))
-        return jsonify({"message": "Added misc member signature"})
-    else:
-        # Check if the freshman is onfloor and if so, sign that row
-        for sig in filter(lambda sig: sig.freshman_username == uid, packet.fresh_signatures):
-            sig.signed = True
-            app.logger.info("Freshman {} signed packet {}".format(uid, packet.id))
-            return jsonify({"message": "Added freshman signature"})
-
-        return rest_error("onfloor_freshman", "Off-floor freshmen can't sign packets")
-
-
 @app.route("/api/packet/<packet_id>/sign/", methods=["POST"])
 @packet_auth
 @before_request
