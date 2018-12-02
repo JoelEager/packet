@@ -50,13 +50,6 @@ class Freshman(db.Model):
     # One freshman can have multiple packets if they repeat the intro process
     packets = relationship("Packet", order_by="desc(Packet.id)")
 
-    def is_currently_on_packet(self):
-        """
-        :return: Boolean for if this freshman has a currently open packet
-        """
-        return Packet.query.filter(Packet.start < datetime.now(), Packet.end > datetime.now(),
-                                   Packet.freshman_username == self.rit_username).count() != 0
-
     def to_dict(self):
         """
         :return: The freshmen converted into a dict ready for returning as a json response
