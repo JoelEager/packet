@@ -21,12 +21,12 @@ def get_csh_name(username):
 
 # pylint: disable=bare-except
 @lru_cache(maxsize=128)
-def get_rit_name(username):
-    try:
-        freshman = Freshman.query.filter_by(rit_username=username).first()
-        return freshman.name + " (" + username + ")"
-    except:
-        return username
+def get_rit_name(rit_username):
+    freshman = Freshman.by_username(rit_username)
+    if freshman is not None:
+        return freshman.name + " (" + rit_username + ")"
+    else:
+        return rit_username
 
 
 def log_time(label):

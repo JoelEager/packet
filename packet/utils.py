@@ -45,7 +45,7 @@ def is_freshman_on_floor(rit_username):
     """
     Checks if a freshman is on floor
     """
-    freshman = Freshman.query.filter_by(rit_username=rit_username).first()
+    freshman = Freshman.by_username(rit_username)
     if freshman is not None:
         return freshman.onfloor
     else:

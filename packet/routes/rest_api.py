@@ -42,13 +42,10 @@ def get_freshmen(search_term):
     results = Freshman.query.filter(Freshman.name.ilike("%" + search_term + "%")).all()
 
     def process_result(result_freshman):
-        open_packets = Packet.query.filter(Packet.start < datetime.now(), Packet.end > datetime.now(),
-                                           Packet.freshman_username == result_freshman.rit_username).count()
-
         return {
             "name": result_freshman.name,
             "rit_username": result_freshman.rit_username,
-            "currently_on_packet": open_packets == 1
+            "currently_on_packet": result_freshman.is_currently_on_packet()
         }
 
     return jsonify(list(map(process_result, results)))
