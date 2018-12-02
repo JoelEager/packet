@@ -17,7 +17,12 @@ def get_packet(packet_id):
     """
     :return: Returns a packet based on username
     """
-    pass
+    packet = Packet.by_id(packet_id)
+
+    if packet is not None:
+        return jsonify(packet.to_dict())
+    else:
+        return rest_error("bad_id", "Invalid packet id")
 
 
 @app.route("/api/freshman/<freshman_username>/")
@@ -43,6 +48,6 @@ def get_freshmen(search_term):
     """
     if search_term.isalpha():
         results = Freshman.query.filter(Freshman.name.ilike("%" + search_term + "%")).all()
-        return jsonify(list(map(lambda freshman: freshman.to_dict(), results)))
+        return jsonify([freshman.to_dict() for freshman in results])
     else:
         return rest_error("bad_search_term", "Only letters are allowed in the search text")

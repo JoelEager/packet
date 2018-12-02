@@ -32,6 +32,12 @@ class SigCounts:
         self.member_total = eboard + upper + self.misc_capped
         self.total = eboard + upper + fresh + self.misc_capped
 
+    def to_dict(self):
+        """
+        :return: The SigCounts converted into a dict ready for returning as a json response
+        """
+        return self.__dict__
+
 
 class Freshman(db.Model):
     __tablename__ = "freshman"
@@ -137,6 +143,22 @@ class Packet(db.Model):
         """
         return self.signatures_required().total == self.signatures_received().total
 
+    def to_dict(self):
+        """
+        :return: The packet converted into a dict ready for returning as a json response
+        """
+        return {
+            "freshman_username": self.freshman_username,
+            "start": str(self.start),
+            "end": str(self.end),
+            "open": self.is_open(),
+            "signatures_required": self.signatures_required().to_dict(),
+            "signatures_received": self.signatures_received().to_dict(),
+            "upper_signatures": [sig.to_dict() for sig in self.upper_signatures],
+            "fresh_signatures": [sig.to_dict() for sig in self.fresh_signatures],
+            "misc_signatures": [sig.to_dict() for sig in self.misc_signatures]
+        }
+
     def __repr__(self):
         return "<Packet {}, {}>".format(self.freshman_username, self.id)
 
@@ -154,6 +176,7 @@ class Packet(db.Model):
         """
         return cls.query.filter_by(id=packet_id).first()
 
+
 class UpperSignature(db.Model):
     __tablename__ = "signature_upper"
     packet_id = Column(Integer, ForeignKey("packet.id"), primary_key=True)
@@ -163,6 +186,16 @@ class UpperSignature(db.Model):
     updated = Column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
 
     packet = relationship("Packet", back_populates="upper_signatures")
+
+    def to_dict(self):
+        """
+        :return: The UpperSignature converted into a dict ready for returning as a json response
+        """
+        return {
+            "member": self.member,
+            "signed": self.signed,
+            "eboard": self.eboard
+        }
 
 
 class FreshSignature(db.Model):
@@ -175,6 +208,15 @@ class FreshSignature(db.Model):
     packet = relationship("Packet", back_populates="fresh_signatures")
     freshman = relationship("Freshman", back_populates="fresh_signatures")
 
+    def to_dict(self):
+        """
+        :return: The FreshSignature converted into a dict ready for returning as a json response
+        """
+        return {
+            "freshman_username": self.freshman_username,
+            "signed": self.signed
+        }
+
 
 class MiscSignature(db.Model):
     __tablename__ = "signature_misc"
@@ -183,3 +225,11 @@ class MiscSignature(db.Model):
     updated = Column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
 
     packet = relationship("Packet", back_populates="misc_signatures")
+
+    def to_dict(self):
+        """
+        :return: The MiscSignature converted into a dict ready for returning as a json response
+        """
+        return {
+            "member": self.member
+        }
