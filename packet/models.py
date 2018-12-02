@@ -7,6 +7,7 @@ from itertools import chain
 
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean
 from sqlalchemy.orm import relationship
+from sqlalchemy.exc import DataError
 
 from . import db
 
@@ -64,7 +65,7 @@ class Freshman(db.Model):
             "rit_username": self.rit_username,
             "name": self.name,
             "onfloor": self.onfloor,
-            "packets": [{"id": packet.id, "is_open": packet.is_open()} for packet in self.packets]
+            "packets": [{"id": packet.id, "open": packet.is_open()} for packet in self.packets]
         }
 
     def __repr__(self):
@@ -148,6 +149,7 @@ class Packet(db.Model):
         :return: The packet converted into a dict ready for returning as a json response
         """
         return {
+            "id": self.id,
             "freshman_name": self.freshman.name,
             "freshman_username": self.freshman_username,
             "start": str(self.start),
@@ -175,7 +177,10 @@ class Packet(db.Model):
         """
         Helper method for fetching 1 packet by its id
         """
-        return cls.query.filter_by(id=packet_id).first()
+        try:
+            return cls.query.filter_by(id=packet_id).first()
+        except DataError:
+            return None
 
 
 class UpperSignature(db.Model):
