@@ -58,7 +58,7 @@ class Freshman(db.Model):
             "rit_username": self.rit_username,
             "name": self.name,
             "onfloor": self.onfloor,
-            "currently_on_packet": self.is_currently_on_packet()
+            "packets": [{"id": packet.id, "is_open": packet.is_open()} for packet in self.packets]
         }
 
     def __repr__(self):
