@@ -52,7 +52,7 @@ app.logger.info("OIDCAuth and LDAP configured")
 from . import models
 from . import context_processors
 from . import commands
-from .routes import api, shared
+from .routes import api, shared, rest_api
 
 if app.config["REALM"] == "csh":
     from .routes import upperclassmen
