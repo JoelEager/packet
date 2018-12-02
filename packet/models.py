@@ -43,6 +43,9 @@ class Freshman(db.Model):
     # One freshman can have multiple packets if they repeat the intro process
     packets = relationship("Packet", order_by="desc(Packet.id)")
 
+    def __repr__(self):
+        return "<Freshman {}, {}>".format(self.name, self.rit_username)
+
 
 class Packet(db.Model):
     __tablename__ = "packet"
@@ -102,6 +105,9 @@ class Packet(db.Model):
 
         # The user must be a misc CSHer that hasn't signed this packet or an off-floor freshmen
         return False
+
+    def __repr__(self):
+        return "<Packet {}, {}>".format(self.freshman_username, self.id)
 
     def is_100(self):
         """
