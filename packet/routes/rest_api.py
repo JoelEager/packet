@@ -36,16 +36,8 @@ def get_freshmen(search_term):
     Case-insensitive string search for freshmen based on real name
     :return: List of the freshmen that match and if they have a currently open packet
     """
-    if not search_term.isalpha():
+    if search_term.isalpha():
+        results = Freshman.query.filter(Freshman.name.ilike("%" + search_term + "%")).all()
+        return jsonify(list(map(lambda freshman: freshman.to_dict(), results)))
+    else:
         return rest_error("bad_search_term", "Only letters are allowed in the search text")
-
-    results = Freshman.query.filter(Freshman.name.ilike("%" + search_term + "%")).all()
-
-    def process_result(result_freshman):
-        return {
-            "name": result_freshman.name,
-            "rit_username": result_freshman.rit_username,
-            "currently_on_packet": result_freshman.is_currently_on_packet()
-        }
-
-    return jsonify(list(map(process_result, results)))

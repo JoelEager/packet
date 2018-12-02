@@ -50,6 +50,17 @@ class Freshman(db.Model):
         return Packet.query.filter(Packet.start < datetime.now(), Packet.end > datetime.now(),
                                    Packet.freshman_username == self.rit_username).count() != 0
 
+    def to_dict(self):
+        """
+        :return: The freshmen converted into a dict ready for returning as a json response
+        """
+        return {
+            "rit_username": self.rit_username,
+            "name": self.name,
+            "onfloor": self.onfloor,
+            "currently_on_packet": self.is_currently_on_packet()
+        }
+
     def __repr__(self):
         return "<Freshman {}, {}>".format(self.name, self.rit_username)
 
