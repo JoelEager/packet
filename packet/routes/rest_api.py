@@ -26,7 +26,12 @@ def get_freshman(freshman_username):
     """
     :return: Returns a freshman based on username
     """
-    pass
+    freshman = Freshman.by_username(freshman_username)
+
+    if freshman is not None:
+        return jsonify(freshman.to_dict())
+    else:
+        return rest_error("bad_username", "Invalid freshman username")
 
 
 @app.route("/api/freshmen/<search_term>/")
