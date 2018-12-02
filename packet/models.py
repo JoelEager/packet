@@ -148,6 +148,7 @@ class Packet(db.Model):
         :return: The packet converted into a dict ready for returning as a json response
         """
         return {
+            "freshman_name": self.freshman.name,
             "freshman_username": self.freshman_username,
             "start": str(self.start),
             "end": str(self.end),
