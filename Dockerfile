@@ -8,9 +8,11 @@ ADD requirements.txt /opt/packet
 WORKDIR /opt/packet
 
 RUN apt-get -yq update && \
-    apt-get -yq --allow-unauthenticated install libsasl2-dev libldap2-dev libssl-dev && \
+    apt-get -yq --allow-unauthenticated install libsasl2-dev libldap2-dev libssl-dev curl && \
     pip install -r requirements.txt && \
-    apt-get -yq clean all
+    apt-get -yq clean all && \
+    curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.4.1-amd64.deb && \
+    sudo dpkg -i filebeat-7.4.1-amd64.deb
 
 ADD . /opt/packet
 
@@ -24,7 +26,8 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
     gulp production && \
     rm -rf node_modules && \
     apt-get -yq remove nodejs npm yarn && \
-    apt-get -yq clean all
+    apt-get -yq clean all && \
+    sudo service filebeat start
 
 RUN ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime
 
